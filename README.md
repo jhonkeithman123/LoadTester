@@ -2,7 +2,7 @@
 
 > Adaptive, zero-config k6 load and overload testing suite generator for **any architecture**: Monorepos (Turborepo, Nx, pnpm), polyglot multi-service stacks (Next.js + Python FastAPI / Go / Rust), Docker Compose, and monoliths. Features an embedded HTML reporter and interactive **Developer Metrics Glossary & Benchmark Guide**.
 
-[![npm version](https://img.shields.io/badge/npm-v1.1.0-blue.svg)](https://www.npmjs.com/package/loadtester-kit)
+[![npm version](https://img.shields.io/badge/npm-v1.1.2-blue.svg)](https://www.npmjs.com/package/loadtester-kit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node: >=16](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](https://nodejs.org/)
 
@@ -191,6 +191,7 @@ Once initialized, your project's `package.json` includes:
 | `npm run test:load:live` | `k6 run -e TARGET_URL=https://your-domain.com loadTester.js` | Stress tests staging/production |
 | `npm run test:load:<service>` | `k6 run -e TARGET_URL=http://localhost:<port> loadTester.js` | Stress tests a specific service |
 | `npm run seeResult` | Opens `summary.html` | Opens interactive HTML dashboard in default browser |
+| `npm run test:load:help` | `npx loadtester-kit commands` | Displays interactive developer guide & command cheat sheet |
 
 ---
 
@@ -232,9 +233,13 @@ The generated `summary.html` includes an interactive glossary. Here is the quick
 ## ⚙️ CLI Reference
 
 ```bash
-# Architecture Inspection
+# Architecture & Service Inspection
 npx loadtester-kit services               # List all discovered services in workspace
 npx loadtester-kit doctor                 # Check environment and active service ports
+
+# Developer Guide & Deep-Dive Help
+npx loadtester-kit commands               # Interactive developer command & workflow guide
+npx loadtester-kit help <command>         # In-depth help for a specific command (e.g. help init)
 
 # Suite Initialization
 npx loadtester-kit init                   # Auto-adapt to workspace or single project
@@ -242,6 +247,10 @@ npx loadtester-kit init --all             # Unified overload suite covering all 
 npx loadtester-kit init --app <id>        # Suite targeting a specific service
 npx loadtester-kit init --port 8080       # Override port
 npx loadtester-kit init --force           # Overwrite existing script
+
+# Direct Execution
+npx loadtester-kit run local              # Run test against local server
+npx loadtester-kit run live               # Run test against live production URL
 
 # Custom Configuration
 npx loadtester-kit config:init            # Generate starter loadtester.config.js
