@@ -2,7 +2,7 @@
 
 > Adaptive, zero-config k6 load and overload testing suite generator for **any architecture**: Monorepos (Turborepo, Nx, pnpm), polyglot multi-service stacks (Next.js + Python FastAPI / Go / Rust), Docker Compose, and monoliths. Features an embedded HTML reporter and interactive **Developer Metrics Glossary & Benchmark Guide**.
 
-[![npm version](https://img.shields.io/badge/npm-v1.1.2-blue.svg)](https://www.npmjs.com/package/loadtester-kit)
+[![npm version](https://img.shields.io/badge/npm-v1.1.3-blue.svg)](https://www.npmjs.com/package/loadtester-kit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node: >=16](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](https://nodejs.org/)
 
@@ -10,18 +10,18 @@
 
 ## 🎯 Features
 
-* 🏗️ **Universal Architecture Engine**: Seamlessly detects and adapts to **any repository structure**:
-  * **Monorepos & Workspaces**: Turborepo, Nx, pnpm workspaces, npm/yarn workspaces, Bun, and Lerna (`apps/*`, `packages/*`, `services/*`).
-  * **Polyglot & Multi-Service**: Split frontend + backend repositories (e.g., Next.js / Vite + **Python FastAPI**, Flask, Django, **Go Gin/Echo**, **Rust Axum/Actix**, PHP Laravel, Ruby on Rails).
-  * **Containerized**: Auto-extracts service definitions and exposed host ports from `docker-compose.yml` / `compose.yaml`.
-  * **Single-App Monoliths**: Next.js (App & Pages router), Nuxt, SvelteKit, Remix, Astro, Vite, Angular, Express, Fastify, NestJS.
-  * **Custom Architectures**: Fully customizable via `loadtester.config.js`.
-* ⚡ **Realistic Overload Simulation**: Pre-configured with multi-stage traffic surges (Warmup 10 VUs → Surge 50 VUs → Overload Stress 100 VUs → Recovery Ramp-down) with human jitter.
-* 🌐 **Multi-Service & Targeted Testing**: Run unified multi-service load tests across your entire architecture (`--all`), or target an individual service (`--app <id>`).
-* 📦 **Automatic `package.json` Integration**: Injects ready-to-run scripts (`test:load`, `test:load:local`, `test:load:live`, `test:load:<service>`, `seeResult`) into your target project.
-* 🛡️ **Edge & WAF Detection**: Detects and tracks Vercel / Cloudflare DDoS challenge blocks (`403 Forbidden` / `X-Vercel-Mitigated: challenge`) with support for bypass tokens.
-* 📊 **Interactive HTML Report + Embedded Glossary**: Produces `summary.html` with latency charts, percentile distributions, AND an interactive, searchable **Glossary of Terms** directly explaining what every metric means in plain English!
-* 🩺 **Deep Diagnostic Doctor**: `loadtester doctor` validates your Node runtime, discovers `k6`, maps out your architecture topology, and checks whether each service's port is active and listening.
+- 🏗️ **Universal Architecture Engine**: Seamlessly detects and adapts to **any repository structure**:
+  - **Monorepos & Workspaces**: Turborepo, Nx, pnpm workspaces, npm/yarn workspaces, Bun, and Lerna (`apps/*`, `packages/*`, `services/*`).
+  - **Polyglot & Multi-Service**: Split frontend + backend repositories (e.g., Next.js / Vite + **Python FastAPI**, Flask, Django, **Go Gin/Echo**, **Rust Axum/Actix**, PHP Laravel, Ruby on Rails).
+  - **Containerized**: Auto-extracts service definitions and exposed host ports from `docker-compose.yml` / `compose.yaml`.
+  - **Single-App Monoliths**: Next.js (App & Pages router), Nuxt, SvelteKit, Remix, Astro, Vite, Angular, Express, Fastify, NestJS.
+  - **Custom Architectures**: Fully customizable via `loadtester.config.js`.
+- ⚡ **Realistic Overload Simulation**: Pre-configured with multi-stage traffic surges (Warmup 10 VUs → Surge 50 VUs → Overload Stress 100 VUs → Recovery Ramp-down) with human jitter.
+- 🌐 **Multi-Service & Targeted Testing**: Run unified multi-service load tests across your entire architecture (`--all`), or target an individual service (`--app <id>`).
+- 📦 **Automatic `package.json` Integration**: Injects ready-to-run scripts (`test:load`, `test:load:local`, `test:load:live`, `test:load:<service>`, `seeResult`) into your target project.
+- 🛡️ **Edge & WAF Detection**: Detects and tracks Vercel / Cloudflare DDoS challenge blocks (`403 Forbidden` / `X-Vercel-Mitigated: challenge`) with support for bypass tokens.
+- 📊 **Interactive HTML Report + Embedded Glossary**: Produces `summary.html` with latency charts, percentile distributions, AND an interactive, searchable **Glossary of Terms** directly explaining what every metric means in plain English!
+- 🩺 **Deep Diagnostic Doctor**: `loadtester doctor` validates your Node runtime, discovers `k6`, maps out your architecture topology, and checks whether each service's port is active and listening.
 
 ---
 
@@ -54,6 +54,7 @@ npx loadtester-kit services
 ```
 
 Output:
+
 ```
 📦 Discovered Architecture & Services:
    Architecture: MONOREPO (Workspace: turborepo)
@@ -81,14 +82,16 @@ Output:
 
 ### 2. Multi-Service Testing Modes
 
-* **Unified Multi-Service Overload Test**: Test all services at the same time:
+- **Unified Multi-Service Overload Test**: Test all services at the same time:
+
   ```bash
   npx loadtester-kit init --all
   npm run test:load:local
   ```
-  *Distributes traffic across both `:3000` and `:8000` with per-service latency trend metrics.*
 
-* **Target a Specific Service**: Test only one service within the workspace:
+  _Distributes traffic across both `:3000` and `:8000` with per-service latency trend metrics._
+
+- **Target a Specific Service**: Test only one service within the workspace:
   ```bash
   npx loadtester-kit init --app api
   npm run test:load:local
@@ -119,8 +122,14 @@ module.exports = {
       liveUrl: "https://your-domain.vercel.app",
       routes: [
         { id: "home", name: "Home Landing", path: "/", weight: 0.5 },
-        { id: "api_health", name: "Health API", path: "/api/health", weight: 0.3, isJson: true }
-      ]
+        {
+          id: "api_health",
+          name: "Health API",
+          path: "/api/health",
+          weight: 0.3,
+          isJson: true,
+        },
+      ],
     },
     {
       id: "api",
@@ -130,21 +139,32 @@ module.exports = {
       port: 8000,
       liveUrl: "https://api.your-domain.com",
       routes: [
-        { id: "health", name: "Service Health", path: "/health", weight: 0.6, isJson: true },
-        { id: "docs", name: "OpenAPI Documentation", path: "/docs", weight: 0.4 }
-      ]
-    }
+        {
+          id: "health",
+          name: "Service Health",
+          path: "/health",
+          weight: 0.6,
+          isJson: true,
+        },
+        {
+          id: "docs",
+          name: "OpenAPI Documentation",
+          path: "/docs",
+          weight: 0.4,
+        },
+      ],
+    },
   ],
   stages: [
     { duration: "10s", target: 10 },
     { duration: "30s", target: 50 },
     { duration: "30s", target: 100 },
-    { duration: "10s", target: 0 }
+    { duration: "10s", target: 0 },
   ],
   thresholds: {
     http_req_duration: ["p(95)<400", "p(99)<750"],
-    http_req_failed: ["rate<0.01"]
-  }
+    http_req_failed: ["rate<0.01"],
+  },
 };
 ```
 
@@ -159,6 +179,7 @@ npx loadtester-kit doctor
 ```
 
 Output:
+
 ```
 🩺 Running LoadTester Kit Doctor...
 
@@ -184,14 +205,14 @@ Output:
 
 Once initialized, your project's `package.json` includes:
 
-| Script | Command | Purpose |
-| :--- | :--- | :--- |
-| `npm run test:load` | `k6 run loadTester.js` | Runs default k6 test script |
-| `npm run test:load:local` | `k6 run -e TARGET_URL=http://localhost:3000 loadTester.js` | Stress tests local server |
-| `npm run test:load:live` | `k6 run -e TARGET_URL=https://your-domain.com loadTester.js` | Stress tests staging/production |
-| `npm run test:load:<service>` | `k6 run -e TARGET_URL=http://localhost:<port> loadTester.js` | Stress tests a specific service |
-| `npm run seeResult` | Opens `summary.html` | Opens interactive HTML dashboard in default browser |
-| `npm run test:load:help` | `npx loadtester-kit commands` | Displays interactive developer guide & command cheat sheet |
+| Script                        | Command                                                      | Purpose                                                    |
+| :---------------------------- | :----------------------------------------------------------- | :--------------------------------------------------------- |
+| `npm run test:load`           | `k6 run loadTester.js`                                       | Runs default k6 test script                                |
+| `npm run test:load:local`     | `k6 run -e TARGET_URL=http://localhost:3000 loadTester.js`   | Stress tests local server                                  |
+| `npm run test:load:live`      | `k6 run -e TARGET_URL=https://your-domain.com loadTester.js` | Stress tests staging/production                            |
+| `npm run test:load:<service>` | `k6 run -e TARGET_URL=http://localhost:<port> loadTester.js` | Stress tests a specific service                            |
+| `npm run seeResult`           | Opens `summary.html`                                         | Opens interactive HTML dashboard in default browser        |
+| `npm run test:load:help`      | `npx loadtester-kit commands`                                | Displays interactive developer guide & command cheat sheet |
 
 ---
 
@@ -199,17 +220,17 @@ Once initialized, your project's `package.json` includes:
 
 The generated `summary.html` includes an interactive glossary. Here is the quick-reference cheat sheet:
 
-| Metric | What It Means | Healthy Target | Common Diagnostic |
-| :--- | :--- | :--- | :--- |
-| **`http_req_duration`** | Total roundtrip time from request start to full response body. | `< 250ms` (APIs)<br>`< 500ms` (SSR) | If > 2s, check server CPU or synchronous blocking code. |
-| **`http_req_waiting (TTFB)`** | Time to First Byte. How long server took to process and start sending response. | `< 100ms` | High TTFB means un-indexed DB queries or un-optimized SSR rendering. |
-| **`p(90) / p(95) / p(99)`** | Percentiles: Response time below which 90%, 95%, or 99% of requests completed. | `p(95) < 350ms`<br>`p(99) < 600ms` | Averages hide spikes! Always look at `p(95)` and `p(99)` to catch tail latency. |
-| **`http_req_failed`** | Percentage of requests that returned 4xx/5xx or dropped connection. | `0.00%` | 502/504 = reverse proxy timeout; 500 = unhandled exception or DB pool exhausted. |
-| **`http_req_connecting`** | Time taken to establish TCP 3-way handshake. | `< 1ms` (local)<br>`< 50ms` (remote) | High values point to network latency or server socket backlog full. |
-| **`http_req_blocked`** | Time waiting for a free TCP connection from connection pool. | `< 1ms` | High values indicate client-side port exhaustion or proxy delay. |
-| **`VUs (Virtual Users)`** | Concurrent simulated users executing test loops in parallel. | Scenario-dependent | 50 VUs looping continuously equals thousands of human users per hour. |
-| **`iterations`** | Total number of complete test scenario loops completed by all VUs. | Higher is better | Dropping iterations under load means the server slowed down. |
-| **`WAF Challenges`** | Edge DDoS protection (Vercel/Cloudflare) blocking requests with HTTP 403. | `0` | Pass `-e VERCEL_BYPASS_TOKEN=...` or adjust rate limits. |
+| Metric                        | What It Means                                                                   | Healthy Target                       | Common Diagnostic                                                                |
+| :---------------------------- | :------------------------------------------------------------------------------ | :----------------------------------- | :------------------------------------------------------------------------------- |
+| **`http_req_duration`**       | Total roundtrip time from request start to full response body.                  | `< 250ms` (APIs)<br>`< 500ms` (SSR)  | If > 2s, check server CPU or synchronous blocking code.                          |
+| **`http_req_waiting (TTFB)`** | Time to First Byte. How long server took to process and start sending response. | `< 100ms`                            | High TTFB means un-indexed DB queries or un-optimized SSR rendering.             |
+| **`p(90) / p(95) / p(99)`**   | Percentiles: Response time below which 90%, 95%, or 99% of requests completed.  | `p(95) < 350ms`<br>`p(99) < 600ms`   | Averages hide spikes! Always look at `p(95)` and `p(99)` to catch tail latency.  |
+| **`http_req_failed`**         | Percentage of requests that returned 4xx/5xx or dropped connection.             | `0.00%`                              | 502/504 = reverse proxy timeout; 500 = unhandled exception or DB pool exhausted. |
+| **`http_req_connecting`**     | Time taken to establish TCP 3-way handshake.                                    | `< 1ms` (local)<br>`< 50ms` (remote) | High values point to network latency or server socket backlog full.              |
+| **`http_req_blocked`**        | Time waiting for a free TCP connection from connection pool.                    | `< 1ms`                              | High values indicate client-side port exhaustion or proxy delay.                 |
+| **`VUs (Virtual Users)`**     | Concurrent simulated users executing test loops in parallel.                    | Scenario-dependent                   | 50 VUs looping continuously equals thousands of human users per hour.            |
+| **`iterations`**              | Total number of complete test scenario loops completed by all VUs.              | Higher is better                     | Dropping iterations under load means the server slowed down.                     |
+| **`WAF Challenges`**          | Edge DDoS protection (Vercel/Cloudflare) blocking requests with HTTP 403.       | `0`                                  | Pass `-e VERCEL_BYPASS_TOKEN=...` or adjust rate limits.                         |
 
 ---
 
@@ -217,10 +238,11 @@ The generated `summary.html` includes an interactive glossary. Here is the quick
 
 > [!CAUTION]
 > **NEVER run load tests against development servers (`next dev`, `pnpm dev`, `uvicorn --reload`)!**
-> 
+>
 > In development mode, compilers re-evaluate code on every incoming request, caching is disabled, and source maps are generated. Under 50 VUs, servers will choke and produce **fake 6,000ms - 12,000ms latency**.
-> 
+>
 > **Always test against a production build:**
+>
 > ```bash
 > pnpm build && pnpm start
 > # Or for Python: uvicorn main:app --workers 4
