@@ -1,0 +1,5 @@
+node_modules/
+summary.html
+glossary.html
+*.log
+graphify-out/
