@@ -1,8 +1,8 @@
 # ⚡ LoadTester Kit (`loadtester-kit`)
 
-> Zero-config, adaptive k6 load and overload testing suite for any web project. Generates custom test scenarios, injects npm scripts, outputs interactive HTML reports, and provides an embedded **Developer Metrics Glossary & Benchmark Guide**.
+> Adaptive, zero-config k6 load and overload testing suite generator for **any architecture**: Monorepos (Turborepo, Nx, pnpm), polyglot multi-service stacks (Next.js + Python FastAPI / Go / Rust), Docker Compose, and monoliths. Features an embedded HTML reporter and interactive **Developer Metrics Glossary & Benchmark Guide**.
 
-[![npm version](https://img.shields.io/badge/npm-v1.0.0-blue.svg)](https://www.npmjs.com/package/loadtester-kit)
+[![npm version](https://img.shields.io/badge/npm-v1.1.0-blue.svg)](https://www.npmjs.com/package/loadtester-kit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node: >=16](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](https://nodejs.org/)
 
@@ -10,21 +10,27 @@
 
 ## 🎯 Features
 
-* 🔍 **Smart Framework & Route Detection**: Automatically detects **Next.js** (App & Pages router), **Vite**, **Express / Fastify**, **Astro**, and Monorepos (Turborepo/pnpm). Discovers and balances traffic across `/`, `/api/health`, `/sitemap.xml`, and `/robots.txt`.
+* 🏗️ **Universal Architecture Engine**: Seamlessly detects and adapts to **any repository structure**:
+  * **Monorepos & Workspaces**: Turborepo, Nx, pnpm workspaces, npm/yarn workspaces, Bun, and Lerna (`apps/*`, `packages/*`, `services/*`).
+  * **Polyglot & Multi-Service**: Split frontend + backend repositories (e.g., Next.js / Vite + **Python FastAPI**, Flask, Django, **Go Gin/Echo**, **Rust Axum/Actix**, PHP Laravel, Ruby on Rails).
+  * **Containerized**: Auto-extracts service definitions and exposed host ports from `docker-compose.yml` / `compose.yaml`.
+  * **Single-App Monoliths**: Next.js (App & Pages router), Nuxt, SvelteKit, Remix, Astro, Vite, Angular, Express, Fastify, NestJS.
+  * **Custom Architectures**: Fully customizable via `loadtester.config.js`.
 * ⚡ **Realistic Overload Simulation**: Pre-configured with multi-stage traffic surges (Warmup 10 VUs → Surge 50 VUs → Overload Stress 100 VUs → Recovery Ramp-down) with human jitter.
-* 📦 **Automatic `package.json` Integration**: Injects ready-to-run scripts (`test:load`, `test:load:local`, `test:load:live`, `seeResult`) into your target project.
+* 🌐 **Multi-Service & Targeted Testing**: Run unified multi-service load tests across your entire architecture (`--all`), or target an individual service (`--app <id>`).
+* 📦 **Automatic `package.json` Integration**: Injects ready-to-run scripts (`test:load`, `test:load:local`, `test:load:live`, `test:load:<service>`, `seeResult`) into your target project.
 * 🛡️ **Edge & WAF Detection**: Detects and tracks Vercel / Cloudflare DDoS challenge blocks (`403 Forbidden` / `X-Vercel-Mitigated: challenge`) with support for bypass tokens.
 * 📊 **Interactive HTML Report + Embedded Glossary**: Produces `summary.html` with latency charts, percentile distributions, AND an interactive, searchable **Glossary of Terms** directly explaining what every metric means in plain English!
-* 🩺 **Built-in Doctor Diagnostic**: `loadtester doctor` validates your Node runtime, discovers `k6` across system PATHs, detects local project frameworks, and checks if servers are listening.
+* 🩺 **Deep Diagnostic Doctor**: `loadtester doctor` validates your Node runtime, discovers `k6`, maps out your architecture topology, and checks whether each service's port is active and listening.
 
 ---
 
 ## 🚀 Quick Start
 
-Run inside any web project root:
+Run inside any project or workspace root:
 
 ```bash
-# Initialize and adapt to your project
+# Initialize and adapt to your project architecture
 npx loadtester-kit init
 ```
 
@@ -37,9 +43,116 @@ npm install -D loadtester-kit
 
 ---
 
+## 🏗️ Working with Monorepos & Multi-Service Architectures
+
+### 1. Inspect Discovered Services
+
+View all detected applications, services, frameworks, and ports across your workspace:
+
+```bash
+npx loadtester-kit services
+```
+
+Output:
+```
+📦 Discovered Architecture & Services:
+   Architecture: MONOREPO (Workspace: turborepo)
+   Total Services: 2
+
+1. Frontend Web (ID: web)
+   Directory: apps/web
+   Framework: nextjs | Language: nodejs
+   Local Port: 3000
+   Routes (4):
+     - [40%] Home Landing Page (/)
+     - [30%] Health API (/api/health)
+     - [15%] SEO Sitemap (/sitemap.xml)
+     - [15%] SEO Robots (/robots.txt)
+
+2. Backend API (ID: api)
+   Directory: apps/api
+   Framework: fastapi | Language: python
+   Local Port: 8000
+   Routes (3):
+     - [40%] Home Landing Page (/)
+     - [35%] API Health (/health)
+     - [15%] OpenAPI Documentation (/docs)
+```
+
+### 2. Multi-Service Testing Modes
+
+* **Unified Multi-Service Overload Test**: Test all services at the same time:
+  ```bash
+  npx loadtester-kit init --all
+  npm run test:load:local
+  ```
+  *Distributes traffic across both `:3000` and `:8000` with per-service latency trend metrics.*
+
+* **Target a Specific Service**: Test only one service within the workspace:
+  ```bash
+  npx loadtester-kit init --app api
+  npm run test:load:local
+  ```
+
+---
+
+## ⚙️ Custom Architecture Configuration (`loadtester.config.js`)
+
+For bespoke, proprietary, or custom topologies, generate a config file:
+
+```bash
+npx loadtester-kit config:init
+```
+
+This creates a `loadtester.config.js`:
+
+```javascript
+module.exports = {
+  architecture: "multi-service",
+  services: [
+    {
+      id: "web",
+      name: "Frontend Web Application",
+      path: "./apps/web",
+      framework: "nextjs",
+      port: 3000,
+      liveUrl: "https://your-domain.vercel.app",
+      routes: [
+        { id: "home", name: "Home Landing", path: "/", weight: 0.5 },
+        { id: "api_health", name: "Health API", path: "/api/health", weight: 0.3, isJson: true }
+      ]
+    },
+    {
+      id: "api",
+      name: "Backend API Service",
+      path: "./backend",
+      framework: "fastapi",
+      port: 8000,
+      liveUrl: "https://api.your-domain.com",
+      routes: [
+        { id: "health", name: "Service Health", path: "/health", weight: 0.6, isJson: true },
+        { id: "docs", name: "OpenAPI Documentation", path: "/docs", weight: 0.4 }
+      ]
+    }
+  ],
+  stages: [
+    { duration: "10s", target: 10 },
+    { duration: "30s", target: 50 },
+    { duration: "30s", target: 100 },
+    { duration: "10s", target: 0 }
+  ],
+  thresholds: {
+    http_req_duration: ["p(95)<400", "p(99)<750"],
+    http_req_failed: ["rate<0.01"]
+  }
+};
+```
+
+---
+
 ## 🩺 Diagnostics (`loadtester doctor`)
 
-Run the doctor command at any time to verify your environment before running tests:
+Run diagnostics anytime to inspect your environment, architecture, and service statuses:
 
 ```bash
 npx loadtester-kit doctor
@@ -51,24 +164,32 @@ Output:
 
   ✓ Node.js Runtime: v20.x (supported >= 16.0.0)
   ✓ k6 Load Engine: k6 v0.49.0
-  ✓ Target Project: my-nextjs-app (Framework: nextjs)
-  ✓ loadTester.js: Present
-  ✓ Local Server (port 3000): Active & Listening
+  ✓ Architecture Topology: MONOREPO (turborepo)
+  ✓ Project Root: my-workspace in /path/to/project
 
-🎉 Environment check complete!
+  Detected Services & Listening Status:
+    • Frontend Web [nextjs / nodejs] (port 3000, path: apps/web)
+      Status: ● Active & Listening — 4 routes detected
+    • Backend API [fastapi / python] (port 8000, path: apps/api)
+      Status: ● Active & Listening — 3 routes detected
+
+  ✓ loadTester.js: Present
+
+🎉 Environment & Architecture diagnostic complete!
 ```
 
 ---
 
 ## 🛠️ Injected Scripts
 
-Once initialized, your project's `package.json` has these scripts ready:
+Once initialized, your project's `package.json` includes:
 
 | Script | Command | Purpose |
 | :--- | :--- | :--- |
 | `npm run test:load` | `k6 run loadTester.js` | Runs default k6 test script |
 | `npm run test:load:local` | `k6 run -e TARGET_URL=http://localhost:3000 loadTester.js` | Stress tests local server |
 | `npm run test:load:live` | `k6 run -e TARGET_URL=https://your-domain.com loadTester.js` | Stress tests staging/production |
+| `npm run test:load:<service>` | `k6 run -e TARGET_URL=http://localhost:<port> loadTester.js` | Stress tests a specific service |
 | `npm run seeResult` | Opens `summary.html` | Opens interactive HTML dashboard in default browser |
 
 ---
@@ -94,58 +215,41 @@ The generated `summary.html` includes an interactive glossary. Here is the quick
 ## ⚠️ Critical Rule: Dev Mode vs Production Mode
 
 > [!CAUTION]
-> **NEVER run load tests against development servers (`next dev` or `pnpm dev`)!**
+> **NEVER run load tests against development servers (`next dev`, `pnpm dev`, `uvicorn --reload`)!**
 > 
-> In development mode, Next.js compiles TypeScript on every incoming request, disables caching, and generates source maps. Under 50 VUs, the single-threaded Node.js event loop will freeze, causing **fake 6,000ms - 12,000ms latency**.
+> In development mode, compilers re-evaluate code on every incoming request, caching is disabled, and source maps are generated. Under 50 VUs, servers will choke and produce **fake 6,000ms - 12,000ms latency**.
 > 
 > **Always test against a production build:**
 > ```bash
-> pnpm build
-> pnpm start
+> pnpm build && pnpm start
+> # Or for Python: uvicorn main:app --workers 4
 > # Then in a separate terminal:
 > pnpm test:load:local
 > ```
-> Production builds serve pre-compiled pages and static assets in **< 20ms**.
 
 ---
 
-## ⚙️ CLI Options & Commands
+## ⚙️ CLI Reference
 
 ```bash
-# Initialize with custom port and URL
-npx loadtester-kit init --port 8080 --url https://staging.myapp.com
+# Architecture Inspection
+npx loadtester-kit services               # List all discovered services in workspace
+npx loadtester-kit doctor                 # Check environment and active service ports
 
-# Re-generate loadTester.js and overwrite existing
-npx loadtester-kit init --force
+# Suite Initialization
+npx loadtester-kit init                   # Auto-adapt to workspace or single project
+npx loadtester-kit init --all             # Unified overload suite covering all services
+npx loadtester-kit init --app <id>        # Suite targeting a specific service
+npx loadtester-kit init --port 8080       # Override port
+npx loadtester-kit init --force           # Overwrite existing script
 
-# Run environment health check
-npx loadtester-kit doctor
+# Custom Configuration
+npx loadtester-kit config:init            # Generate starter loadtester.config.js
 
-# Open the latest summary.html
-npx loadtester-kit report
-
-# Print the glossary of metrics in your terminal
-npx loadtester-kit glossary
-
-# Export standalone glossary HTML page
-npx loadtester-kit glossary:export
-```
-
----
-
-## 📦 Publishing to npm
-
-To publish this package to npm:
-
-```bash
-# 1. Login to your npm account
-npm login
-
-# 2. Test package files before publishing
-npm pack --dry-run
-
-# 3. Publish to npm registry
-npm publish --access public
+# Reports & Glossary
+npx loadtester-kit report                 # Open summary.html in browser
+npx loadtester-kit glossary               # Print terminal glossary
+npx loadtester-kit glossary:export        # Export glossary.html
 ```
 
 ---

@@ -1,7 +1,7 @@
 {
   "name": "loadtester-kit",
-  "version": "1.0.0",
-  "description": "Adaptive, zero-config k6 load testing suite generator for any web project with embedded HTML reporter and developer glossary of terms.",
+  "version": "1.1.0",
+  "description": "Adaptive, zero-config k6 load testing suite generator for any architecture (monorepos, polyglot frontend/backend, microservices, containerized stacks) with embedded HTML reporter and developer glossary of terms.",
   "main": "index.js",
   "types": "index.d.ts",
   "bin": {
@@ -27,7 +27,13 @@
     "nextjs",
     "express",
     "vite",
-    "turborepo"
+    "turborepo",
+    "monorepo",
+    "pnpm",
+    "fastapi",
+    "microservices",
+    "polyglot",
+    "docker"
   ],
   "author": "DevRig",
   "license": "MIT",
